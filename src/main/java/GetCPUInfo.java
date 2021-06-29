@@ -6,6 +6,8 @@ import java.util.*;
 
 public class GetCPUInfo {
     static Map<String,CPUUsageInfo> cpuUsageInfoMap;
+    static String ip="192.168.154.133";
+
     public static void main(String[] args) throws Exception {
         cpuUsageInfoMap=new HashMap<>();
         new GetCPUInfo();
