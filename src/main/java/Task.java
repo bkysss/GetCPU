@@ -1,12 +1,15 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Scanner;
 import java.util.TimerTask;
 
 public class Task extends TimerTask {
+    private final String SERVER_IP="localhost";
     public void run() {
         String sqlStr="";
         try{
@@ -29,14 +32,49 @@ public class Task extends TimerTask {
         catch (Exception e){
             e.printStackTrace();
         }
+
+        System.out.println(sqlStr);
+
         try {
-            HandleInfo.UpdateDaily(sqlStr);
-        } catch (ClassNotFoundException e) {
+            Socket socket=new Socket(SERVER_IP,9097);
+            try(InputStream is =socket.getInputStream()){
+                try(OutputStream os =socket.getOutputStream()){
+                    handle(sqlStr,is,os);
+                    socket.close();
+                }
+            }
+
+            System.out.println("disconnected");
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
         }
 
+//        try {
+//            HandleInfo.UpdateDaily(sqlStr);
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (SQLException throwables) {
+//            throwables.printStackTrace();
+//        }
+
+    }
+
+    private static void handle(String str,InputStream input, OutputStream output) throws IOException, InterruptedException {
+        var writer = new BufferedWriter(new OutputStreamWriter(output, StandardCharsets.UTF_8));
+        var reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));
+//        Scanner scanner = new Scanner(System.in);
+//        System.out.println("[server] " + reader.readLine());
+        System.out.print(">>> "); // 打印提示
+        writer.write(str);
+        writer.newLine();
+        writer.flush();
+//        for (;;) {
+//
+//            //Thread.sleep(500);
+//
+//            break;
+//
+//        }
     }
 
 }

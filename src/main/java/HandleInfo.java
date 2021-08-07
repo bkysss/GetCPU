@@ -35,17 +35,20 @@ public class HandleInfo {
         return cpuUsageInfo;
     }
 
-    public static void UpdateDaily(String str) throws ClassNotFoundException, SQLException { //更新当日服务器进程CPU使用情况
+    public static void UpdateDaily(String str,String ip) throws ClassNotFoundException, SQLException { //更新当日服务器进程CPU使用情况
+
         Class.forName("com.mysql.cj.jdbc.Driver");
         String url = "jdbc:mysql://localhost:3306/SmartController";
         Connection conn = DriverManager.getConnection(url, "root", "123456");
         Calendar calendar= Calendar.getInstance();
         SimpleDateFormat dateFormat= new SimpleDateFormat("yyyyMMdd");
         String date=dateFormat.format(calendar.getTime());
+        System.out.println(date);
+        System.out.println("/"+ip+"/");
         try(PreparedStatement ps= conn.prepareStatement("update Daily set ServCPU=? where DDate=? and DIPAddr=?")){
             ps.setObject(1,str);
             ps.setObject(2,date);
-            ps.setObject(3,GetCPUInfo.ip);
+            ps.setObject(3,ip);
             int n= ps.executeUpdate();
         }
         conn.close();
